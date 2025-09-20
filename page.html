@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Health Awareness Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ece5dd;
+      display: flex;
+      justify-content: center;
+      padding-top: 50px;
+    }
+    .chat-container {
+      width: 400px;
+      height: 600px;
+      background: #fff;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .message {
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+    .user-msg {
+      background: #dcf8c6;
+      align-self: flex-end;
+    }
+    .bot-msg {
+      background: #f1f0f0;
+      align-self: flex-start;
+    }
+    .input-container {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+      background: #f0f0f0;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      background: #128c7e;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #075e54;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div id="messages" class="messages"></div>
+    <div class="input-container">
+      <input id="user" placeholder="Type a message..." />
+      <button onclick="send()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function send() {
+      let userText = document.getElementById("user").value;
+      if (!userText) return;
+
+      const messagesDiv = document.getElementById("messages");
+
+      // Show user message
+      const userMsgDiv = document.createElement("div");
+      userMsgDiv.className = "message user-msg";
+      userMsgDiv.innerText = userText;
+      messagesDiv.appendChild(userMsgDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      document.getElementById("user").value = "";
+
+      // Send to backend
+      try {
+        let res = await fetch("http://127.0.0.1:8000/message", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({text: userText})
+        });
+        let data = await res.json();
+
+        // Show bot message
+        const botMsgDiv = document.createElement("div");
+        botMsgDiv.className = "message bot-msg";
+        botMsgDiv.innerText = data.reply;
+        messagesDiv.appendChild(botMsgDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Auto-greeting when chat opens
+    window.onload = async () => {
+      const messagesDiv = document.getElementById("messages");
+      const botMsgDiv = document.createElement("div");
+      botMsgDiv.className = "message bot-msg";
+      botMsgDiv.innerText = "👋 Welcome to Health Awareness Assistant!\nI can help you with:\n📝 Check symptoms\n🛡 Precautions\nℹ General health FAQs\n\nHow can I help you today?";
+      messagesDiv.appendChild(botMsgDiv);
+    };
+  </script>
+</body>
+</html>
