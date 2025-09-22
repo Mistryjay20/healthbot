@@ -24,7 +24,7 @@ for _, row in df.iterrows():
 # ----------------------------
 # Gemini
 # ----------------------------
-genai.configure(api_key=os.getenv("AIzaSyCCwW4af3k5EnTeuEcf5A5satPE1w2tGsw"))   # 🔑 set your API key as env variable
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))   # 🔑 set your API key as env variable
 gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
 # ----------------------------
